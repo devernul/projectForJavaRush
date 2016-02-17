@@ -110,16 +110,6 @@
                             <tr>
                                 <td colspan="6">
                                     <div class="simplePagination">
-    <%--                                    <c:if test="${not empty page_id}">
-                                            <span ><a href="#"><b> ${page_id} </b></a></span>
-                                        </c:if>
-                                        <c:if test="${page_id>0}">
-                                            <span><a href="/tasks/page_id/${page_id-1}/"><b><<</b></a></span>
-                                        </c:if>
-
-                                        <c:if test="${tasks.size()==5}">
-                                            <span><a href="/tasks/page_id/${page_id+1}/"><b>>></b></a></span>
-                                        </c:if>--%>
                                         <b><spring:message code="KolVoTasks"/>: ${countsTasks}</b>
                                     </div>
                                 </td>

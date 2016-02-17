@@ -190,7 +190,7 @@ public class TasksController {
             model.addAttribute("task", task);
             model.addAttribute("statuses", statuses);
             model.addAttribute("countsTasks", taskDao.size());
-            model.addAttribute("page_id", 1);
+            model.addAttribute("page_id", INDEX_FIRST_PAGE);
 
             return TASKS;
         } else if (action.equalsIgnoreCase("delete")) {
@@ -224,42 +224,45 @@ public class TasksController {
     private static void initialDump(final DaoStatus statusDao, final DaoUser userDao, final DaoTask taskDao) {
 
 
-        Thread th2 = new Thread(
+        Thread initialThread = new Thread(
                     new Runnable() {
                         public void run() {
 
                                 if (!Thread.interrupted())
                                 {
-                                    statusDao.initAction();
+                                    synchronized (statusDao) {
+                                        statusDao.initAction();
 
-                                    if (userDao.findAll().isEmpty()) {
-                                        userDao.initAction();
-                                    }
-                                    if (taskDao.size() <= 0) {
-                                        for (EnumTask taskEl : EnumTask.values()) {
-                                            Task task = new Task();
-                                            task.setDate(new Date());
-                                            task.setName(taskEl.getName());
-                                            task.setDescription(taskEl.getDescription());
-                                            task.setStatus(statusDao.getByName(EnumStatus.NEW.getTitle()));
-                                            task.setUsers(userDao.findAll());
-                                            taskDao.create(task);
+                                        if (userDao.findAll().isEmpty()) {
+                                            userDao.initAction();
+                                        }
+                                        if (taskDao.size() <= 0) {
+                                            for (EnumTask taskEl : EnumTask.values()) {
+                                                Task task = new Task();
+                                                task.setDate(new Date());
+                                                task.setName(taskEl.getName());
+                                                task.setDescription(taskEl.getDescription());
+                                                task.setStatus(statusDao.getByName(EnumStatus.NEW.getTitle()));
+                                                task.setUsers(userDao.findAll());
+                                                taskDao.create(task);
+                                            }
+                                        }
+                                        try {
+                                            Thread.currentThread().sleep(500);
+                                        } catch (InterruptedException e) {
+                                            logger.warn(e.getMessage());
                                         }
                                     }
                                 }
                                 else
                                     return;
-                                try {
-                                    Thread.currentThread().sleep(500);
-                                } catch (InterruptedException e) {
-                                    logger.warn(e.getMessage());
-                                }
+
 
                         }
                     });
-            th2.start();
+            initialThread.start();
             try {
-                th2.join();
+                initialThread.join();
                 Thread.currentThread().sleep(500);
             } catch (InterruptedException e) {
                 logger.warn(e.getMessage());
