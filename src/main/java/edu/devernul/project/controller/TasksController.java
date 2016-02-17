@@ -225,48 +225,48 @@ public class TasksController {
 
 
         Thread initialThread = new Thread(
-                    new Runnable() {
-                        public void run() {
+                new Runnable() {
+                    public void run() {
 
-                                if (!Thread.interrupted())
-                                {
-                                    synchronized (statusDao) {
-                                        statusDao.initAction();
+                        if (!Thread.interrupted())
+                        {
+                            synchronized (statusDao) {
+                                statusDao.initAction();
 
-                                        if (userDao.findAll().isEmpty()) {
-                                            userDao.initAction();
-                                        }
-                                        if (taskDao.size() <= 0) {
-                                            for (EnumTask taskEl : EnumTask.values()) {
-                                                Task task = new Task();
-                                                task.setDate(new Date());
-                                                task.setName(taskEl.getName());
-                                                task.setDescription(taskEl.getDescription());
-                                                task.setStatus(statusDao.getByName(EnumStatus.NEW.getTitle()));
-                                                task.setUsers(userDao.findAll());
-                                                taskDao.create(task);
-                                            }
-                                        }
-                                        try {
-                                            Thread.currentThread().sleep(500);
-                                        } catch (InterruptedException e) {
-                                            logger.warn(e.getMessage());
-                                        }
+                                if (userDao.findAll().isEmpty()) {
+                                    userDao.initAction();
+                                }
+                                if (taskDao.size() <= 0) {
+                                    for (EnumTask taskEl : EnumTask.values()) {
+                                        Task task = new Task();
+                                        task.setDate(new Date());
+                                        task.setName(taskEl.getName());
+                                        task.setDescription(taskEl.getDescription());
+                                        task.setStatus(statusDao.getByName(EnumStatus.NEW.getTitle()));
+                                        task.setUsers(userDao.findAll());
+                                        taskDao.create(task);
                                     }
                                 }
-                                else
-                                    return;
-
-
+                                try {
+                                    Thread.currentThread().sleep(500);
+                                } catch (InterruptedException e) {
+                                    logger.warn(e.getMessage());
+                                }
+                            }
                         }
-                    });
-            initialThread.start();
-            try {
-                initialThread.join();
-                Thread.currentThread().sleep(500);
-            } catch (InterruptedException e) {
-                logger.warn(e.getMessage());
-            }
+                        else
+                            return;
+
+
+                    }
+                });
+        initialThread.start();
+        try {
+            initialThread.join();
+            Thread.currentThread().sleep(500);
+        } catch (InterruptedException e) {
+            logger.warn(e.getMessage());
+        }
     }
 
 }
